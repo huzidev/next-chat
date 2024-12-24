@@ -1,14 +1,33 @@
 "use client";
-import { auth } from "@/services/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-export default function SignupPage() {
+export default function Page() {
   const [user, setUser] = useState({
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!username || !email || !password) {
+      setError("Fields are required.");
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setError("Please enter a valid email.");
+    } else if (password.length < 8) {
+      setError("Please enter a valid password.");
+    } else {
+      await signup();
+      setError("");
+      alert("Form submitted!");
+    }
+  };
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -38,51 +57,73 @@ export default function SignupPage() {
   const { email, password, confirmPassword } = user;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">
-          Sign Up
+    <main className="bg-[#26313c] h-screen flex justify-center items-center">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg animate-fade-in">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          Register
         </h1>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="email"
-              placeholder="Email"
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="username" className="font-medium text-gray-700">
+              Username
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
+              type="username"
+              id="username"
+              placeholder="Enter your username"
               value={email}
-              onChange={(e) => handleChange(e)}
-              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
             />
           </div>
-          <div className="mb-4">
-            <input
+          <div>
+            <label htmlFor="email" className="font-medium text-gray-700">
+              Email
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="font-medium text-gray-700">
+              Password
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="password"
-              name="password"
-              placeholder="Password"
+              id="password"
+              placeholder="Enter your password"
               value={password}
-              onChange={(e) => handleChange(e)}
-              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
             />
           </div>
-          <div className="mb-6">
-            <input
+          <div>
+            <label htmlFor="password" className="font-medium text-gray-700">
+              Confirm Password
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => handleChange(e)}
-              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={handleChange}
             />
           </div>
-          <button
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <Button
             type="submit"
-            onClick={signup}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mt-2 bg-red-600 rounded-full hover:bg-blue-700 text-white py-2"
           >
-            Sign Up
-          </button>
+            Register
+          </Button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

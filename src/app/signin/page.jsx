@@ -1,9 +1,10 @@
-"use client";
-import { auth } from "@/services/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+'use client'
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
-export default function SigninPage() {
+export default function Page() {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -35,41 +36,47 @@ export default function SigninPage() {
   const { email, password } = user;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">
-          Sign In
+    <main className="bg-[#26313c] h-screen flex justify-center items-center">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          Signin
         </h1>
-        <form onSubmit={(e) => e.preventDefault()}>
-          <div className="mb-4">
-            <input
-              type="text"
-              name="email"
-              placeholder="Email"
+        <form className="flex flex-col gap-4">
+          <div>
+            <label htmlFor="email" className="font-medium text-gray-700">
+              Email
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
+              type="email"
               value={email}
-              onChange={(e) => handleChange(e)}
-              className="w-full px-4 py-2 text-black border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="email"
+              onChange={handleChange}
+              placeholder="Enter your email"
             />
           </div>
-          <div className="mb-6">
-            <input
+          <div>
+            <label htmlFor="password" className="font-medium text-gray-700">
+              Password
+            </label>
+            <Input
+              className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="password"
-              name="password"
-              placeholder="Password"
+              id="password"
               value={password}
-              onChange={(e) => handleChange(e)}
-              className="w-full px-4 py-2 border text-black border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={handleChange}
+              placeholder="Enter your password"
             />
           </div>
-          <button
-            type="submit"
+          <Button
             onClick={signin}
-            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            type="submit"
+            className="w-full mt-2 bg-red-600 rounded-full hover:bg-blue-700 text-white py-2"
           >
-            Sign In
-          </button>
+            Signin
+          </Button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }
