@@ -1,8 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { auth } from "@/services/firebase";
+import { auth, db } from "@/services/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -53,13 +54,23 @@ export default function Page() {
         email,
         password
       );
-      console.log("response", response);
-      
+      const userId = response.user.uid; // Get the user ID
+      console.log("response", userId);
+
+      await setDoc(doc(db, "users", userId), {
+        id: userId,
+        email,
+        username,
+        password,
+        confirmPassword,
+        createdAt: new Date().toISOString(),
+      });
+
       if (response) {
-        localStorage.setItem('user', new Date());
+        localStorage.setItem("user", userId);
         router.push("/");
       } else {
-        setError('Something went wrong. Please try again.');
+        setError("Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Error signing up:", error);

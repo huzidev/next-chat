@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function Header() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -13,19 +13,9 @@ export function Header() {
     {key: '/signup', value: 'SignUp'},
   ];
   const loggedInPaths = [
-    { key: "/chat", value: "Chat" },
+    { key: "/messages", value: "Messages" },
     { key: "/profile", value: "Profile" },
   ];
-
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    setIsUserLoggedIn(!!user);
-    if (!user && !loggedOutPaths.includes(router.pathname)) {
-      router.push("/signin");
-    } else {
-      router.push("/");
-    }
-  }, [router.pathname]);
 
   const paths = isUserLoggedIn ? loggedInPaths : loggedOutPaths;
 
