@@ -1,4 +1,7 @@
-'use client';
+import { getAnalytics } from "firebase/analytics";
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_API_KEY,
@@ -9,3 +12,11 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_MEASUREMENT_ID,
 };
+
+// Initialize Firebase App
+const app = initializeApp(firebaseConfig);
+
+// Export the initialized services
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
