@@ -1,7 +1,9 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { auth } from "@/services/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
@@ -13,6 +15,7 @@ export default function Page() {
   });
   const [error, setError] = useState("");
   const { username, email, password, confirmPassword } = user;
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,19 +42,24 @@ export default function Page() {
   // Firebase sign up function
   async function signup() {
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Successfully signed in:", data.uid);
+      // const response = await fetch("/api/auth/signup", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(user),
+      // });
+      // const data = await response.json();
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("response", response);
+      
+      if (response) {
+        localStorage.setItem('user', new Date());
+        router.push("/");
       } else {
-        setError(data.error);
+        setError('Something went wrong. Please try again.');
       }
     } catch (error) {
       console.error("Error signing up:", error);
@@ -132,6 +140,12 @@ export default function Page() {
           >
             Register
           </Button>
+          <p>
+            Already have an account?{" "}
+            <a href="/signin" className="text-blue-600">
+              Signin
+            </a>
+          </p>
         </form>
       </div>
     </main>

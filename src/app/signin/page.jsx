@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { auth } from "@/services/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
@@ -10,6 +13,7 @@ export default function Page() {
     password: "",
   });
   const [error, setError] = useState("");
+  const router = useRouter();
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -19,21 +23,24 @@ export default function Page() {
     });
   }
 
+  console.log("user", user);
+
   async function signin() {
     try {
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password
-        }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Successfully signed in:", data.uid);
+      // const response = await fetch("/api/auth/signin", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify(user),
+      // });
+      // const data = await response.json();
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      if (response) {
+        localStorage.setItem("user", new Date());
+        router.push("/");
       } else {
-        setError(data.error);
+        setError("Something went wrong. Please try again.");
       }
     } catch (error) {
       console.error("Error signing in:", error);
@@ -88,6 +95,12 @@ export default function Page() {
           >
             Signin
           </Button>
+          <p>
+            Don't have an account?{" "}
+            <a href="/signup" className="text-blue-600">
+              Signup
+            </a>
+          </p>
         </form>
       </div>
     </main>

@@ -1,11 +1,37 @@
+'use client';
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function Header() {
-  function logout() {
-    if (localStorage.getItem("user")) {
-      localStorage.removeItem("user");
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const router = useRouter();
+
+  const loggedOutPaths = [
+    {key: '/signin', value: 'SignIn'},
+    {key: '/signup', value: 'SignUp'},
+  ];
+  const loggedInPaths = [
+    { key: "/chat", value: "Chat" },
+    { key: "/profile", value: "Profile" },
+  ];
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    setIsUserLoggedIn(!!user);
+    if (!user && !loggedOutPaths.includes(router.pathname)) {
+      router.push("/signin");
+    } else {
+      router.push("/");
     }
+  }, [router.pathname]);
+
+  const paths = isUserLoggedIn ? loggedInPaths : loggedOutPaths;
+
+  function logout() {
+    localStorage.removeItem("user");
+    router.push('/signin');
   }
 
   return (
@@ -16,18 +42,19 @@ export function Header() {
         </Link>
         <div className="flex-grow" />
         <div className="space-x-4 text-md flex items-center">
-          <Link href="/signin" className="hover:underline">
-            SignIn
-          </Link>
-          <Link href="/signup" className="hover:underline">
-            SignUp
-          </Link>
-          <Link href="/chat/user/1" className="hover:underline">
-            Chat
-          </Link>
-          <Link href="/logout" className="hover:underline">
-            Logout
-          </Link>
+          {paths.map(({ key, value }) => (
+            <Link href={key} key={key} className="hover:underline">
+              {value}
+            </Link>
+          ))}
+          {isUserLoggedIn && (
+            <button
+              onClick={logout}
+              className="hover:underline"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
     </header>
