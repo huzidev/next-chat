@@ -1,6 +1,13 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -11,12 +18,13 @@ export default function UserProfile() {
   const id = location.pathname.replace("/user/", "");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const currentId = localStorage.getItem("user");
 
   useEffect(() => {
     if (!id) return;
     const fetchUser = async () => {
       try {
-        const docRef = doc(db, "users", id); 
+        const docRef = doc(db, "users", id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -42,27 +50,41 @@ export default function UserProfile() {
     return <p>User not found.</p>;
   }
 
-  console.log("SW user", user);
-  
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">{user.username}'s Profile</h1>
-      <div className="mb-4">
-        <p>
-          <strong>Email:</strong> {user.email}
-        </p>
-        <p>
-          <strong>Joined:</strong>{" "}
-          {new Date(user.createdAt).toLocaleDateString()}
-        </p>
-      </div>
-      <Button
-        onClick={() => router.push(`/chat/${id}`)} // Redirect to chat page
-        className="bg-blue-500 text-white hover:bg-blue-600"
-      >
-        Send Message
-      </Button>
+    <div className="p-6 mx-auto max-w-[1200]">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">
+            {user.username}'s Profile
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>
+            <strong>Email:</strong> {user.email}
+          </p>
+          <p>
+            <strong>Joined:</strong>{" "}
+            {new Date(user.createdAt).toLocaleDateString()}
+          </p>
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          {id === currentId ? (
+            <Button
+              onClick={() => router.push(`/edit-profile`)}
+              className="bg-green-500 text-white hover:bg-green-600"
+            >
+              Edit Profile
+            </Button>
+          ) : (
+            <Button
+              onClick={() => router.push(`/chat/${id}`)}
+              className="bg-blue-500 text-white hover:bg-blue-600"
+            >
+              Send Message
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
     </div>
   );
 }
