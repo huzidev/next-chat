@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function Header() {
+export default function Header() {
   function logout() {
     if (localStorage.getItem("user")) {
       localStorage.removeItem("user");
@@ -22,8 +22,8 @@ export function Header() {
           <Link href="/signup" className="hover:underline">
             SignUp
           </Link>
-          <Link href="/chat/user/1" className="hover:underline">
-            Chat
+          <Link href="/users" className="hover:underline">
+            Users
           </Link>
           <Link href="/logout" className="hover:underline">
             Logout

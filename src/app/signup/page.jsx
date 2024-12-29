@@ -12,10 +12,10 @@ export default function Page() {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const { email, password, confirmPassword } = user;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!username || !email || !password) {
       setError("Fields are required.");
     } else if (!/\S+@\S+\.\S+/.test(email)) {
@@ -39,7 +39,6 @@ export default function Page() {
 
   // Firebase sign up function
   async function signup() {
-    const { email, password, confirmPassword } = user;
     try {
       const response = await createUserWithEmailAndPassword(
         auth,
@@ -54,7 +53,6 @@ export default function Page() {
     }
   }
 
-  const { email, password, confirmPassword } = user;
 
   return (
     <main className="bg-[#26313c] h-screen flex justify-center items-center">
@@ -103,15 +101,19 @@ export default function Page() {
             />
           </div>
           <div>
-            <label htmlFor="password" className="font-medium text-gray-700">
+            <label
+              htmlFor="confirmPassword"
+              className="font-medium text-gray-700"
+            >
               Confirm Password
             </label>
             <Input
               className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="password"
-              id="password"
+              name="confirmPassword"
+              id="confirmPassword"
               placeholder="Enter your password"
-              value={password}
+              value={confirmPassword}
               onChange={handleChange}
             />
           </div>
