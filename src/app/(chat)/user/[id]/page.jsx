@@ -55,7 +55,7 @@ export default function UserProfile() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-xl font-bold">
-            {user.username}'s Profile
+            {currentId === id ? "Yours Profile" : `${user.username}'s ` + 'Profile'}
           </CardTitle>
         </CardHeader>
         <CardContent>

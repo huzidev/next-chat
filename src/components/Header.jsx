@@ -1,27 +1,28 @@
-'use client';
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export function Header() {
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  // const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const router = useRouter();
 
+  const isUserLoggedIn = localStorage.getItem("user");
+
   const loggedOutPaths = [
-    {key: '/signin', value: 'SignIn'},
-    {key: '/signup', value: 'SignUp'},
+    { key: "/signin", value: "SignIn" },
+    { key: "/signup", value: "SignUp" },
   ];
   const loggedInPaths = [
     { key: "/messages", value: "Messages" },
-    { key: "/profile", value: "Profile" },
+    { key: `/user/${isUserLoggedIn}`, value: "Profile" },
   ];
 
   const paths = isUserLoggedIn ? loggedInPaths : loggedOutPaths;
 
   function logout() {
     localStorage.removeItem("user");
-    router.push('/signin');
+    router.push("/signin");
   }
 
   return (
@@ -30,7 +31,7 @@ export function Header() {
         <Link href="/" className="flex justify-center items-center">
           <Image src="/logo.png" width={60} height={60} alt="logo" />
         </Link>
-        <div className="flex-grow" />
+        <div className="flex-grow" /> 
         <div className="space-x-4 text-md flex items-center">
           {paths.map(({ key, value }) => (
             <Link href={key} key={key} className="hover:underline">
@@ -38,10 +39,7 @@ export function Header() {
             </Link>
           ))}
           {isUserLoggedIn && (
-            <button
-              onClick={logout}
-              className="hover:underline"
-            >
+            <button onClick={logout} className="hover:underline">
               Logout
             </button>
           )}
