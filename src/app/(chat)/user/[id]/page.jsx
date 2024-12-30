@@ -1,5 +1,7 @@
 "use client";
 
+import Spinner from "@/components/Spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -43,11 +45,23 @@ export default function UserProfile() {
   }, [id]);
 
   if (loading) {
-    return <p>Loading user details...</p>;
+    return (
+      <Spinner />
+    );
   }
 
-  if (!user) {
-    return <p>User not found.</p>;
+  if (!user && !loading) {
+    return (
+      <div className="p-6 h-full mx-auto max-w-[1200]">
+        <Alert variant="destructive">
+          <AlertTitle>User Not Found</AlertTitle>
+          <AlertDescription>
+            The user you are trying to chat with does not exist. Please try
+            again.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
