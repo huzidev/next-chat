@@ -12,7 +12,6 @@ export default function ChatPage() {
   const router = useRouter();
   const { userId } = router.query;
   const currentId = localStorage.getItem("user");
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
@@ -49,7 +48,6 @@ export default function ChatPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Chat with User {userId}</h1>
-
       <div className="space-y-4 mb-4">
         {messages.map((message, index) => (
           <div
@@ -70,7 +68,6 @@ export default function ChatPage() {
           </div>
         ))}
       </div>
-
       <div className="flex gap-2">
         <Input
           type="text"

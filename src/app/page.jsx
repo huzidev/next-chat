@@ -48,7 +48,7 @@ export default function Home() {
                <div className="mt-4 flex space-x-2">
                  {!isUserLoggedIn && (
                    <Button
-                     onClick={() => router.push(`/chat/${id}`)}
+                     onClick={() => router.push(`/chat`)}
                      variant="default"
                    >
                      Open Chat
