@@ -37,7 +37,7 @@ export default function Page() {
       // const data = await response.json();
       const response = await signInWithEmailAndPassword(auth, email, password);
       if (response) {
-        localStorage.setItem("user", new Date());
+        localStorage.setItem("user", response.user.uid);
         router.push("/");
       } else {
         setError("Something went wrong. Please try again.");

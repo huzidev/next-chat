@@ -13,31 +13,44 @@ export default function Messages() {
   const [loading, setLoading] = useState(true);
   const currentUserId = localStorage.getItem("user");
 
+  
   useEffect(() => {
     async function fetchMessages() {
       try {
-        const q = query(
+        const senderQuery = query(
           collection(db, "messages"),
-          where("users", "array-contains", currentUserId)
+          where("senderId", "==", currentUserId)
         );
-        const querySnapshot = await getDocs(q);
-        const fetchedMessages = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+
+        const receiverQuery = query(
+          collection(db, "messages"),
+          where("receiverId", "==", currentUserId)
+        );
+
+        const senderSnapshot = await getDocs(senderQuery);
+        const receiverSnapshot = await getDocs(receiverQuery);
+
+        const fetchedMessages = [];
+        senderSnapshot.forEach((doc) => {
+          fetchedMessages.push({ id: doc.id, ...doc.data() });
+        });
+        receiverSnapshot.forEach((doc) => {
+          fetchedMessages.push({ id: doc.id, ...doc.data() });
+        });
+
         setMessages(fetchedMessages);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
-    };
+    }
 
     if (currentUserId) fetchMessages();
   }, [currentUserId]);
 
   if (loading) {
-      return <Spinner />
-    }
+    return <Spinner />;
+  }
 
   if (!messages.length) {
     return (
@@ -51,7 +64,7 @@ export default function Messages() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Your Messages</h1>
       <div className="space-y-4">
-        {messages.map((message) => (
+        {messages.reverse().map((message) => (
           <Card
             key={message.id}
             className="cursor-pointer hover:shadow-lg transition"
@@ -60,15 +73,17 @@ export default function Messages() {
             <CardHeader>
               <h2 className="font-semibold text-lg">
                 Conversation with{" "}
-                {message.users.filter((id) => id !== currentUserId).join(", ")}
+                {message.senderId === currentUserId
+                  ? `User ${message.receiverId}`
+                  : `User ${message.senderId}`}
               </h2>
             </CardHeader>
             <CardContent>
               <p className="text-gray-500">
-                Last message: {message.lastMessage || "No messages yet"}
+                Last message: {message.content || "No messages yet"}
               </p>
               <p className="text-sm text-gray-400">
-                {new Date(message.updatedAt).toLocaleString()}
+                {new Date(message.updatedAt?.seconds * 1000).toLocaleString()}
               </p>
             </CardContent>
           </Card>
