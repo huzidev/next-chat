@@ -1,11 +1,11 @@
-// app/chat/[userId]/page.js
 "use client";
 
-import { Button, Input } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { db } from "@/services/firebase";
 import { useSocket } from "@/services/socket";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ChatPage() {

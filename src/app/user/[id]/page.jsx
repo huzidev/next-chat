@@ -24,23 +24,20 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (!id) return;
-    const fetchUser = async () => {
+    async function fetchUser() {
       try {
         const docRef = doc(db, "users", id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           setUser(docSnap.data());
-        } else {
-          console.error("No such user found!");
         }
+        setLoading(false);
+
       } catch (error) {
         console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
       }
     };
-
     fetchUser();
   }, [id]);
 
