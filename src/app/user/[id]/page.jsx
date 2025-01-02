@@ -42,9 +42,7 @@ export default function UserProfile() {
   }, [id]);
 
   if (loading) {
-    return (
-      <Spinner />
-    );
+    return <Spinner />
   }
 
   if (!user && !loading) {
