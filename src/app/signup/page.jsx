@@ -1,7 +1,10 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { auth, db } from "@/services/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Page() {
@@ -12,7 +15,8 @@ export default function Page() {
     confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const { email, password, confirmPassword } = user;
+  const { username, email, password, confirmPassword } = user;
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,7 +29,6 @@ export default function Page() {
     } else {
       await signup();
       setError("");
-      alert("Form submitted!");
     }
   };
 
@@ -40,19 +43,40 @@ export default function Page() {
   // Firebase sign up function
   async function signup() {
     try {
+      // const response = await fetch("/api/auth/signup", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(user),
+      // });
+      // const data = await response.json();
       const response = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
-      console.log("User signed up: ", response);
-      // Add user data to your database
-      // await addUserToDatabase(response.user);
+      const userId = response.user.uid; // Get the user ID
+      console.log("response", userId);
+
+      await setDoc(doc(db, "users", userId), {
+        id: userId,
+        email,
+        username,
+        password,
+        confirmPassword,
+        createdAt: new Date().toISOString(),
+      });
+
+      if (response) {
+        localStorage.setItem("user", userId);
+        router.push("/");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
     } catch (error) {
-      console.error("Error signing up: ", error);
+      console.error("Error signing up:", error);
+      setError("Something went wrong. Please try again.");
     }
   }
-
 
   return (
     <main className="bg-[#26313c] h-screen flex justify-center items-center">
@@ -69,9 +93,10 @@ export default function Page() {
               className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="username"
               id="username"
+              name="username"
               placeholder="Enter your username"
-              value={email}
-              onChange={handleChange}
+              value={username}
+              onChange={(e) => handleChange(e)}
             />
           </div>
           <div>
@@ -82,9 +107,10 @@ export default function Page() {
               className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="email"
               id="email"
+              name="email"
               placeholder="Enter your email"
               value={email}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
             />
           </div>
           <div>
@@ -95,9 +121,10 @@ export default function Page() {
               className="mt-2 bg-gray-100 rounded-full border border-gray-300 px-4 py-2"
               type="password"
               id="password"
+              name="password"
               placeholder="Enter your password"
               value={password}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
             />
           </div>
           <div>
@@ -114,7 +141,7 @@ export default function Page() {
               id="confirmPassword"
               placeholder="Enter your password"
               value={confirmPassword}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
             />
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
@@ -124,6 +151,12 @@ export default function Page() {
           >
             Register
           </Button>
+          <p>
+            Already have an account?{" "}
+            <a href="/signin" className="text-blue-600">
+              Signin
+            </a>
+          </p>
         </form>
       </div>
     </main>
