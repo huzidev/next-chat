@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/react": "19.0.2",
     "eslint": "^9",
     "eslint-config-next": "15.1.2",
     "postcss": "^8",
