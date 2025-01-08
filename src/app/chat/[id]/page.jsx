@@ -27,6 +27,10 @@ export default function ChatPage() {
           const data = docSnapshot.data();
           console.log("SW data in docSnapShot", data);
           setMessages(data.messages || []);
+          console.log("SW data.senderId", data.senderId);
+          console.log("SW data.receiverId", data.receiverId);
+          console.log("SW CurrentId", currentId);
+          
           setIsSender(data.senderId === currentId || data.receiverId === currentId);
       }}
     );
@@ -42,8 +46,6 @@ export default function ChatPage() {
       createdAt: new Date(),
     };
 
-    console.log("SW newMessageData", newMessageData);
-
     try {
       const chatDocRef = doc(db, "messages", chatId);
       await updateDoc(chatDocRef, {
@@ -55,6 +57,8 @@ export default function ChatPage() {
     }
     setNewMessage("");
   };
+
+  console.log("SW isSender", isSender);
 
   return (
     <div className="p-6">
