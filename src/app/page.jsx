@@ -11,13 +11,22 @@ import {
   serverTimestamp,
   where,
 } from "firebase/firestore";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const defaultLoadingState = {
+  state: false,
+  type: null
+}
 
 export default function Home() {
   const [users, setUsers] = useState([]);
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState({
+    state: true,
+    type: 'fetching-users',
+  });
   const currentId = localStorage.getItem("user");
 
   // Fetch all users from Firestore
@@ -31,7 +40,7 @@ export default function Home() {
           ...doc.data(),
         }));
         setUsers(usersList);
-        setLoading(false);
+        setLoading(defaultLoadingState);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -43,6 +52,10 @@ export default function Home() {
 
   async function handleOpenChat(receiverId) {
     try {
+      setLoading({
+        state: true,
+        type: receiverId,
+      });
       const q = query(
         collection(db, "messages"),
         where("senderId", "in", [currentId, receiverId]),
@@ -78,7 +91,9 @@ export default function Home() {
     }
   }
 
-  if (loading) {
+  const { type, state } = loading;
+
+  if (state && type === 'fetching-users') {
     return <Spinner />;
   }
 
@@ -89,6 +104,7 @@ export default function Home() {
         {users.map((user) => {
           const { id, username, email } = user;
           const isUserLoggedIn = currentId === id;
+          const openingChat = state && type === id;
           return (
             <Card key={id} className="hover:shadow-lg">
               <CardHeader className="font-bold">
@@ -101,8 +117,10 @@ export default function Home() {
                     <Button
                       onClick={() => handleOpenChat(id)}
                       variant="default"
+                      disabled={openingChat}
                     >
                       Open Chat
+                      {openingChat && <Loader2 className="animate-spin" />}
                     </Button>
                   )}
                   <Button

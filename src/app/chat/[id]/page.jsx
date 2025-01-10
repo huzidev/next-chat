@@ -66,40 +66,68 @@ export default function ChatPage() {
     }
     setNewMessage("");
   };
-  console.log("SW loading state", loading);
-  console.log("SW messages", messages);
   
   return (
     <div className="py-6 max-w-[1200] mx-auto">
       <div className="flex items-center mb-4">
-        <Button variant="plain" className="p-0 pr-2" onClick={() => router.back()}>
+        <Button
+          variant="plain"
+          className="p-0 pr-2"
+          onClick={() => router.back()}
+        >
           <ChevronLeft />
         </Button>
-        <h1>
-          Chat
-        </h1>
+        <h1>Chat</h1>
       </div>
       <h1 className="text-2xl font-bold mb-4"></h1>
       <div className="space-y-4 mb-4">
-        {loading &&
+        {loading ? (
           Array.from({ length: 5 }).map((_, index) => (
-            <Skeleton key={index} className=" h-[30px] rounded-full" />
-          ))}
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`p-4 rounded-lg ${
-              isSender ? "bg-blue-100" : "bg-gray-100"
-            }`}
-          >
-            <p>
-              <strong>{isSender ? "You" : "User"}:</strong> {message.content}
-            </p>
-            <p className="text-xs text-gray-500">
-              {new Date(message.createdAt.seconds * 1000).toLocaleString()}
-            </p>
+            <Skeleton key={index} className="h-[30px] rounded-full" />
+          ))
+        ) : !messages.length ? (
+          <div className="flex flex-col items-center justify-center h-full py-10">
+            <div className="flex flex-col items-center">
+              <svg
+                className="w-16 h-16 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12h3m-3-4h3m-3 8h3m-6 4H7c-2.21 0-4-1.79-4-4V7c0-2.21 1.79-4 4-4h10c2.21 0 4 1.79 4 4v6.5M8 15h.01M12 15h.01M12 11h.01M8 11h.01M8 7h.01M12 7h.01M16 11h.01M16 7h.01"
+                />
+              </svg>
+              <h1 className="mt-4 text-xl font-semibold text-gray-700">
+                No messages found
+              </h1>
+            </div>
           </div>
-        ))}
+        ) : (
+          messages.map((message, index) => {
+            const isSender = message.senderId === currentUserId;
+            return (
+              <div
+                key={index}
+                className={`p-4 rounded-lg ${
+                  isSender ? "bg-blue-100" : "bg-gray-100"
+                }`}
+              >
+                <p>
+                  <strong>{isSender ? "You" : "User"}:</strong>{" "}
+                  {message.content}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {new Date(message.createdAt.seconds * 1000).toLocaleString()}
+                </p>
+              </div>
+            );
+          })
+        )}
       </div>
       <div className="flex gap-2">
         <Input

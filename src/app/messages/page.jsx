@@ -13,7 +13,20 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUserId = localStorage.getItem("user");
-  
+
+  async function fetchUserData(userId) {
+    try {
+      const userQuery = query(collection(db, "users"), where("id", "==", userId));
+      const userSnapshot = await getDocs(userQuery);
+      if (!userSnapshot.empty) {
+        return userSnapshot.docs[0].data();
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+    return null;
+  }
+
   async function fetchMessages() {
     try {
       const senderQuery = query(
@@ -30,70 +43,86 @@ export default function Messages() {
       const receiverSnapshot = await getDocs(receiverQuery);
 
       const fetchedMessages = [];
-      senderSnapshot.forEach((doc) => {
-        fetchedMessages.push({ id: doc.id, ...doc.data() });
-      });
-      receiverSnapshot.forEach((doc) => {
-        fetchedMessages.push({ id: doc.id, ...doc.data() });
-      });
+      for (const doc of senderSnapshot.docs) {
+        const message = { id: doc.id, ...doc.data() };
+        const receiverData = await fetchUserData(message.receiverId);
+        fetchedMessages.push({
+          ...message,
+          receiverName: receiverData?.name || `User ${message.receiverId}`,
+        });
+      }
 
+      for (const doc of receiverSnapshot.docs) {
+        const message = { id: doc.id, ...doc.data() };
+        const senderData = await fetchUserData(message.senderId);
+        fetchedMessages.push({
+          ...message,
+          senderName: senderData?.name || `User ${message.senderId}`,
+        });
+      }
+
+      console.log("Fetched messages:", fetchedMessages);
       setMessages(fetchedMessages);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching messages:", error);
+    } finally {
+      setLoading(false);
     }
   }
-  
+
   useEffect(() => {
-    if (currentUserId)  {
-      fetchMessages()
-    };
+    if (currentUserId) {
+      fetchMessages();
+    }
   }, [currentUserId]);
 
   if (loading) {
     return <Spinner />;
   }
 
-  if (!messages.length) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-500">No messages found.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 mx-auto max-w-[1200]">
-      <div className="flex gap-1 items-center mb-4" onClick={() => router.back()}>
+    <div className="p-4 mx-auto max-w-[1200px]">
+      <div
+        className="flex gap-1 items-center mb-4"
+        onClick={() => router.back()}
+      >
         <ChevronLeft className="cursor-pointer" />
         <h1 className="text-2xl font-bold">Your Messages</h1>
       </div>
-      <div className="space-y-4">
-        {messages.reverse().map((message) => (
-          <Card
-            key={message.id}
-            className="cursor-pointer hover:shadow-lg transition"
-            onClick={() => router.push(`/chat/${message.id}`)}
-          >
-            <CardHeader>
-              <h2 className="font-semibold text-lg">
-                Conversation with{" "}
-                {message.senderId === currentUserId
-                  ? `User ${message.receiverId}`
-                  : `User ${message.senderId}`}
-              </h2>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-500">
-                Last message: {message.content || "No messages yet"}
-              </p>
-              <p className="text-sm text-gray-400">
-                {new Date(message.updatedAt?.seconds * 1000).toLocaleString()}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {!messages.length ? (
+        <div className="flex justify-center items-center h-screen">
+          <p className="text-gray-500">No messages found.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {messages.reverse().map((message) => (
+            <Card
+              key={message.id}
+              className="cursor-pointer hover:shadow-lg transition"
+              onClick={() => router.push(`/chat/${message.id}`)}
+            >
+              <CardHeader>
+                <h2 className="font-semibold text-lg">
+                  Conversation with{" "}
+                  {message.senderId === currentUserId
+                    ? message.receiverName
+                    : message.senderName}
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-500">
+                  Last message: {message.content || "No messages yet"}
+                </p>
+                <p className="text-sm text-gray-400">
+                  {new Date(
+                    message.updatedAt?.seconds * 1000 || Date.now()
+                  ).toLocaleString()}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
