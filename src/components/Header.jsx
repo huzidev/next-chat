@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export function Header() {
+export default function Header() {
   // const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const router = useRouter();
 

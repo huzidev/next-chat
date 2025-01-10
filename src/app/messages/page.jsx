@@ -12,40 +12,41 @@ export default function Messages() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUserId = localStorage.getItem("user");
+  
+  async function fetchMessages() {
+    try {
+      const senderQuery = query(
+        collection(db, "messages"),
+        where("senderId", "==", currentUserId)
+      );
 
+      const receiverQuery = query(
+        collection(db, "messages"),
+        where("receiverId", "==", currentUserId)
+      );
+
+      const senderSnapshot = await getDocs(senderQuery);
+      const receiverSnapshot = await getDocs(receiverQuery);
+
+      const fetchedMessages = [];
+      senderSnapshot.forEach((doc) => {
+        fetchedMessages.push({ id: doc.id, ...doc.data() });
+      });
+      receiverSnapshot.forEach((doc) => {
+        fetchedMessages.push({ id: doc.id, ...doc.data() });
+      });
+
+      setMessages(fetchedMessages);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  }
   
   useEffect(() => {
-    async function fetchMessages() {
-      try {
-        const senderQuery = query(
-          collection(db, "messages"),
-          where("senderId", "==", currentUserId)
-        );
-
-        const receiverQuery = query(
-          collection(db, "messages"),
-          where("receiverId", "==", currentUserId)
-        );
-
-        const senderSnapshot = await getDocs(senderQuery);
-        const receiverSnapshot = await getDocs(receiverQuery);
-
-        const fetchedMessages = [];
-        senderSnapshot.forEach((doc) => {
-          fetchedMessages.push({ id: doc.id, ...doc.data() });
-        });
-        receiverSnapshot.forEach((doc) => {
-          fetchedMessages.push({ id: doc.id, ...doc.data() });
-        });
-
-        setMessages(fetchedMessages);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    }
-
-    if (currentUserId) fetchMessages();
+    if (currentUserId)  {
+      fetchMessages()
+    };
   }, [currentUserId]);
 
   if (loading) {
