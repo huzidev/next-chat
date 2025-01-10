@@ -24,8 +24,6 @@ export default function UserProfile() {
   const userId = localStorage.getItem('user');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const currentId = localStorage.getItem("user");
-  console.log("SW params", params);
 
   useEffect(() => {
     if (!id) return;
@@ -67,23 +65,27 @@ export default function UserProfile() {
 
   return (
     <div className="p-6 mx-auto max-w-[1200]">
-      <Button variant="outline" onClick={() => router.back()}>
+      <Button
+        className="text-2xl font-semibold mb-4"
+        variant="plain"
+        onClick={() => router.back()}
+      >
         <ChevronLeft />
         Back
       </Button>
       <Card className="w-full">
-        <CardHeader>
+        <CardHeader className="pb-0">
           <CardTitle className="text-xl font-bold">
             {isMyProfile ? "Yours Profile" : `${user.username}'s ` + "Profile"}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="py-4">
           {isMyProfile && (
             <p>
               <strong>Username:</strong> {user.username}
             </p>
           )}
-          <p>
+          <p className="my-2">
             <strong>Email:</strong> {user.email}
           </p>
           <p>
