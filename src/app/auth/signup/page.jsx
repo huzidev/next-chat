@@ -90,7 +90,7 @@ export default function Page() {
   }
 
   return (
-    <main className="bg-[#26313c] h-[calc(100vh-92px)] flex justify-center items-center">
+    <main className="bg-[#26313c] h-[calc(100vh-88px)] flex justify-center items-center">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg animate-fade-in">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Register
