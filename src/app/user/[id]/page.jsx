@@ -12,12 +12,13 @@ import {
 } from "@/components/ui/card";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UserProfile() {
   const router = useRouter();
-  const id = location.pathname.replace("/user/", "");
+  const params = useParams();
+  const { id } = params;
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const currentId = localStorage.getItem("user");
