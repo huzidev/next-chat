@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { db } from "@/services/firebase";
 import {
   arrayUnion,
@@ -9,19 +10,28 @@ import {
   onSnapshot,
   updateDoc
 } from "firebase/firestore";
+import { ChevronLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ChatPage() {
-  const chatId = location.pathname.replace("/chat/", "");
+  const params = useParams();
+  const { id } = params;
+  const [loading, setLoading] = useState(true);
   const senderId = localStorage.getItem("user");
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isSender, setIsSender] = useState(false);
   const [receiverId, setReceiverId] = useState("");
+  const router = useRouter();
+
+  console.log("SW id", id);
+  console.log("SW params for messages", params);
+  
 
   function fetchChat() {
     const unsubscribe = onSnapshot(
-      doc(db, "messages", chatId),
+      doc(db, "messages", id),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
@@ -30,16 +40,17 @@ export default function ChatPage() {
           setReceiverId(data.senderId === senderId ? data.senderId : data.receiverId);
         }}
     );
-
+    
     // Update messgae read status
     return () => unsubscribe();
   }
 
   useEffect(() => {
-    if (chatId) {
+    if (id) {
       fetchChat();
+      setLoading(false);
     }
-  }, [chatId]);
+  }, [id]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
@@ -52,7 +63,7 @@ export default function ChatPage() {
     };
 
     try {
-      const chatDocRef = doc(db, "messages", chatId);
+      const chatDocRef = doc(db, "messages", id);
       await updateDoc(chatDocRef, {
         messages: arrayUnion(newMessageData),
       });
@@ -62,12 +73,22 @@ export default function ChatPage() {
     setNewMessage("");
   };
 
-  console.log("SW isSender", isSender);
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Chat</h1>
+    <div className="py-6 max-w-[1200] mx-auto">
+      <div className="flex items-center mb-4">
+        <Button variant="plain" className="p-0 pr-2" onClick={() => router.back()}>
+          <ChevronLeft />
+        </Button>
+        <h1>
+          Chat
+        </h1>
+      </div>
+      <h1 className="text-2xl font-bold mb-4"></h1>
       <div className="space-y-4 mb-4">
+        {loading &&
+          Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton key={index} className=" h-[30px] rounded-full" />
+          ))}
         {messages.map((message, index) => (
           <div
             key={index}
@@ -92,10 +113,7 @@ export default function ChatPage() {
           onChange={(e) => setNewMessage(e.target.value)}
           className="flex-1"
         />
-        <Button
-          disabled={!newMessage}
-          onClick={handleSendMessage}
-        >
+        <Button disabled={!newMessage} onClick={handleSendMessage}>
           Send
         </Button>
       </div>

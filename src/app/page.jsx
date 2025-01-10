@@ -1,4 +1,5 @@
 "use client";
+import Spinner from "@/components/general/Spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { db } from "@/services/firebase";
@@ -16,11 +17,12 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [users, setUsers] = useState([]);
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const currentId = localStorage.getItem("user");
 
   // Fetch all users from Firestore
   useEffect(() => {
-    async function fetchUsers(params) {
+    async function fetchUsers() {
       try {
         const usersCollection = collection(db, "users");
         const snapshot = await getDocs(usersCollection);
@@ -29,6 +31,7 @@ export default function Home() {
           ...doc.data(),
         }));
         setUsers(usersList);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -75,7 +78,9 @@ export default function Home() {
     }
   }
 
-  console.log("SW local storage user:", currentId);
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="p-4 mx-auto max-w-[1200]">

@@ -4,6 +4,7 @@ import Spinner from "@/components/general/Spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { db } from "@/services/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -62,8 +63,11 @@ export default function Messages() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Your Messages</h1>
+    <div className="p-4 mx-auto max-w-[1200]">
+      <div className="flex gap-1 items-center mb-4" onClick={() => router.back()}>
+        <ChevronLeft className="cursor-pointer" />
+        <h1 className="text-2xl font-bold">Your Messages</h1>
+      </div>
       <div className="space-y-4">
         {messages.reverse().map((message) => (
           <Card

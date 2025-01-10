@@ -11,13 +11,9 @@ export default function Header() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const user = localStorage.getItem("user");
 
-  console.log("SW isUserLoggedIn Header", isUserLoggedIn);
-
-  console.log("SW location.pathname HEADER", location.pathname);
-
   useEffect(() => {
     if (user) {
-      console.log("SW is user logged in USEEFFETC??", user);
+      console.log("?", user);
       setIsUserLoggedIn(true);
     }
   }, [location.pathname]);
@@ -41,11 +37,11 @@ export default function Header() {
 
   return (
     <header className="dark:bg-zinc-900/50 bg-zinc-100/50 p-4">
-      <div className="container mx-auto flex items-center justify-center">
+      <div className="container max-w-[1200] mx-auto flex items-center justify-center">
         <Link href="/" className="flex justify-center items-center">
           <Image src="/logo.png" width={60} height={60} alt="logo" />
         </Link>
-        <div className="flex-grow" /> 
+        <div className="flex-grow" />
         <div className="space-x-4 text-md flex items-center">
           {paths.map(({ key, value }) => (
             <Link href={key} key={key} className="hover:underline">

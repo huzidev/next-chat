@@ -25,7 +25,6 @@ export default function UserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const currentId = localStorage.getItem("user");
-
   console.log("SW params", params);
 
   useEffect(() => {
