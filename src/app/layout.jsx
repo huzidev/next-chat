@@ -1,4 +1,5 @@
 import Header from "@/components/layout/Header";
+import { Toaster } from "@/components/ui/toaster";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
       >
         <Header />
         {children}
+        <Toaster />
       </body>
     </html>
   );

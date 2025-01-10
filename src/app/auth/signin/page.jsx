@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { auth } from "@/services/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -14,6 +15,7 @@ export default function Page() {
   });
   const [error, setError] = useState("");
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -35,6 +37,7 @@ export default function Page() {
       //   body: JSON.stringify(user),
       // });
       // const data = await response.json();
+      setLoading(true);
       const response = await signInWithEmailAndPassword(auth, email, password);
       if (response) {
         localStorage.setItem("user", response.user.uid);
@@ -51,7 +54,7 @@ export default function Page() {
   const { email, password } = user;
 
   return (
-    <main className="bg-[#26313c] h-screen flex justify-center items-center">
+    <main className="bg-[#26313c] h-[calc(100vh-92px)] flex justify-center items-center">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Signin
@@ -91,13 +94,15 @@ export default function Page() {
           <Button
             onClick={signin}
             type="submit"
-            className="w-full mt-2 bg-red-600 rounded-full hover:bg-blue-700 text-white py-2"
+            className={`w-full mt-2 bg-red-600 rounded-full hover:bg-blue-700 text-white py-2`}
+            disabled={loading}
           >
+            {loading && <Loader2 className="animate-spin" />}
             Signin
           </Button>
           <p>
             Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600">
+            <a href="/auth/signup" className="text-blue-600">
               Signup
             </a>
           </p>
