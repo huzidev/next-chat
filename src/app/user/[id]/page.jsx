@@ -1,6 +1,6 @@
 "use client";
 
-import Spinner from "@/components/Spinner";
+import Spinner from "@/components/general/Spinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { db } from "@/services/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { ChevronLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -19,15 +20,19 @@ export default function UserProfile() {
   const router = useRouter();
   const params = useParams();
   const { id } = params;
+  const isMyProfile = id === 'me';
+  const userId = localStorage.getItem('user');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const currentId = localStorage.getItem("user");
+
+  console.log("SW params", params);
 
   useEffect(() => {
     if (!id) return;
     async function fetchUser() {
       try {
-        const docRef = doc(db, "users", id);
+        const docRef = doc(db, "users", isMyProfile ? userId : id);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
@@ -52,23 +57,33 @@ export default function UserProfile() {
         <Alert variant="destructive">
           <AlertTitle>User Not Found</AlertTitle>
           <AlertDescription>
-            The user you are trying to chat with does not exist. Please try
-            again.
+            The user you are trying to chat with does not exist.
           </AlertDescription>
         </Alert>
       </div>
     );
   }
 
+  const route = isMyProfile ? `/user/edit-profile` : `/chat/${id}`;
+
   return (
     <div className="p-6 mx-auto max-w-[1200]">
+      <Button variant="outline" onClick={() => router.back()}>
+        <ChevronLeft />
+        Back
+      </Button>
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-xl font-bold">
-            {currentId === id ? "Yours Profile" : `${user.username}'s ` + 'Profile'}
+            {isMyProfile ? "Yours Profile" : `${user.username}'s ` + "Profile"}
           </CardTitle>
         </CardHeader>
         <CardContent>
+          {isMyProfile && (
+            <p>
+              <strong>Username:</strong> {user.username}
+            </p>
+          )}
           <p>
             <strong>Email:</strong> {user.email}
           </p>
@@ -78,21 +93,16 @@ export default function UserProfile() {
           </p>
         </CardContent>
         <CardFooter className="flex justify-end">
-          {id === currentId ? (
-            <Button
-              onClick={() => router.push(`/edit-profile`)}
-              className="bg-green-500 text-white hover:bg-green-600"
-            >
-              Edit Profile
-            </Button>
-          ) : (
-            <Button
-              onClick={() => router.push(`/chat/${id}`)}
-              className="bg-blue-500 text-white hover:bg-blue-600"
-            >
-              Send Message
-            </Button>
-          )}
+          <Button
+            onClick={() => router.push(route)}
+            className={`text-white ${
+              isMyProfile
+                ? "bg-green-500  hover:bg-green-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            } `}
+          >
+            {isMyProfile ? "Edit Profile" : "Send Message"}
+          </Button>
         </CardFooter>
       </Card>
     </div>

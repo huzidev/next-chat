@@ -1,6 +1,6 @@
 "use client";
 
-import Spinner from "@/components/Spinner";
+import Spinner from "@/components/general/Spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { db } from "@/services/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";

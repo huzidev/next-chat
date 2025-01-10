@@ -1,9 +1,12 @@
 "use client";
 
+import Spinner from "@/components/general/Spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { db } from "@/services/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function EditProfile() {
@@ -15,6 +18,7 @@ export default function EditProfile() {
     email: "",
   });
   const [updating, setUpdating] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!currentId) return;
@@ -70,7 +74,7 @@ export default function EditProfile() {
   };
 
   if (loading) {
-    return <p>Loading profile details...</p>;
+    return <Spinner />;
   }
 
   if (!user) {
@@ -82,7 +86,12 @@ export default function EditProfile() {
 
   return (
     <div className="p-6 mx-auto max-w-[1200]">
-      <h1 className="text-2xl font-bold mb-4">Edit Profile</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        <Button variant="primary" onClick={() => router.back()}>
+          <ChevronLeft />
+        </Button>
+        Edit Profile
+      </h1>
       <div className="space-y-4">
         <div>
           <label className="block font-medium mb-1" htmlFor="username">

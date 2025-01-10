@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [users, setUsers] = useState([]);
   const router = useRouter();
+  const currentId = localStorage.getItem("user");
 
   // Fetch all users from Firestore
   useEffect(() => {
@@ -36,7 +37,6 @@ export default function Home() {
     fetchUsers();
   }, []);
 
-  const currentId = localStorage.getItem('user');
 
   async function handleOpenChat(receiverId) {
     try {
@@ -103,7 +103,7 @@ export default function Home() {
                   <Button
                     onClick={() =>
                       router.push(
-                        isUserLoggedIn ? "/edit-profile" : `/user/${id}`
+                        isUserLoggedIn ? "/user/edit-profile" : `/user/${id}`
                       )
                     }
                     variant="outline"

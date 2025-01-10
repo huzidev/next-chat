@@ -2,27 +2,41 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  // const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  console.log("SW is header even running???");
+  
   const router = useRouter();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const user = localStorage.getItem("user");
 
-  const isUserLoggedIn = localStorage.getItem("user");
+  console.log("SW isUserLoggedIn Header", isUserLoggedIn);
+
+  console.log("SW location.pathname HEADER", location.pathname);
+
+  useEffect(() => {
+    if (user) {
+      console.log("SW is user logged in USEEFFETC??", user);
+      setIsUserLoggedIn(true);
+    }
+  }, [location.pathname]);
 
   const loggedOutPaths = [
-    { key: "/signin", value: "SignIn" },
-    { key: "/signup", value: "SignUp" },
+    { key: "/auth/signin", value: "SignIn" },
+    { key: "/auth/signup", value: "SignUp" },
   ];
   const loggedInPaths = [
     { key: "/messages", value: "Messages" },
-    { key: `/user/${isUserLoggedIn}`, value: "Profile" },
+    { key: `/user/me`, value: "Profile" },
   ];
 
   const paths = isUserLoggedIn ? loggedInPaths : loggedOutPaths;
 
   function logout() {
     localStorage.removeItem("user");
-    router.push("/signin");
+    router.push("/auth/signin");
+    setIsUserLoggedIn(false);
   }
 
   return (
