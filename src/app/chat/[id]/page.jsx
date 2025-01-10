@@ -25,31 +25,25 @@ export default function ChatPage() {
   const [receiverId, setReceiverId] = useState("");
   const router = useRouter();
 
-  console.log("SW id", id);
-  console.log("SW params for messages", params);
-  
-
   function fetchChat() {
     const unsubscribe = onSnapshot(
       doc(db, "messages", id),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
+          console.log("SW what is data on fetch", data);
+          
           setMessages(data.messages || []);
           setIsSender(data.senderId === senderId || data.receiverId === senderId);
           setReceiverId(data.senderId === senderId ? data.senderId : data.receiverId);
+          setLoading(false);
         }}
     );
-    
-    // Update messgae read status
-    return () => unsubscribe();
+    return () => unsubscribe()
   }
 
   useEffect(() => {
-    if (id) {
-      fetchChat();
-      setLoading(false);
-    }
+    fetchChat();
   }, [id]);
 
   const handleSendMessage = async () => {
@@ -72,7 +66,9 @@ export default function ChatPage() {
     }
     setNewMessage("");
   };
-
+  console.log("SW loading state", loading);
+  console.log("SW messages", messages);
+  
   return (
     <div className="py-6 max-w-[1200] mx-auto">
       <div className="flex items-center mb-4">

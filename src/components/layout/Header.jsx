@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Header() {
-  console.log("SW is header even running???");
-  
   const router = useRouter();
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const user = localStorage.getItem("user");
