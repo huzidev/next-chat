@@ -13,29 +13,32 @@ import { useEffect, useState } from "react";
 
 export default function ChatPage() {
   const chatId = location.pathname.replace("/chat/", "");
-  const currentId = localStorage.getItem("user");
+  const senderId = localStorage.getItem("user");
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isSender, setIsSender] = useState(false);
+  const [receiverId, setReceiverId] = useState("");
 
-  useEffect(() => {
-    if (!chatId) return;
+  function fetchChat() {
     const unsubscribe = onSnapshot(
       doc(db, "messages", chatId),
       (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
-          console.log("SW data in docSnapShot", data);
           setMessages(data.messages || []);
-          console.log("SW data.senderId", data.senderId);
-          console.log("SW data.receiverId", data.receiverId);
-          console.log("SW CurrentId", currentId);
-          
-          setIsSender(data.senderId === currentId || data.receiverId === currentId);
-      }}
+          setIsSender(data.senderId === senderId || data.receiverId === senderId);
+          setReceiverId(data.senderId === senderId ? data.senderId : data.receiverId);
+        }}
     );
 
+    // Update messgae read status
     return () => unsubscribe();
+  }
+
+  useEffect(() => {
+    if (chatId) {
+      fetchChat();
+    }
   }, [chatId]);
 
   const handleSendMessage = async () => {
@@ -44,6 +47,8 @@ export default function ChatPage() {
     const newMessageData = {
       content: newMessage,
       createdAt: new Date(),
+      senderId,
+      receiverId,
     };
 
     try {
@@ -51,7 +56,6 @@ export default function ChatPage() {
       await updateDoc(chatDocRef, {
         messages: arrayUnion(newMessageData),
       });
-      console.log("SW chatDocRef", chatDocRef);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -88,7 +92,12 @@ export default function ChatPage() {
           onChange={(e) => setNewMessage(e.target.value)}
           className="flex-1"
         />
-        <Button onClick={handleSendMessage}>Send</Button>
+        <Button
+          disabled={!newMessage}
+          onClick={handleSendMessage}
+        >
+          Send
+        </Button>
       </div>
     </div>
   );
