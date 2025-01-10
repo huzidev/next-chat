@@ -1,6 +1,5 @@
 "use client";
 
-import EmptyChat from "@/components/general/EmptyChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -87,7 +86,7 @@ export default function ChatPage() {
             <Skeleton key={index} className="h-[30px] rounded-full" />
           ))
         ) : !messages.length ? (
-          <EmptyChat type='chat' message="No messages found" />
+          <EmptyState message="No messages found" />
         ) : (
           messages.map((message, index) => {
             return (

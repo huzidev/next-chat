@@ -1,4 +1,5 @@
 "use client";
+import EmptyState from "@/components/general/EmptyChat";
 import Spinner from "@/components/general/Spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -97,9 +98,18 @@ export default function Home() {
     return <Spinner />;
   }
 
+  if (users && !users.length) {
+    return (
+      <div className="h-[calc(100dvh-100px)]">
+        <EmptyState message="No users found" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 mx-auto max-w-[1200]">
       <h1 className="text-2xl font-bold mb-4">All Users</h1>
+      {users && !users.length && <EmptyState message="No users found" />}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {users.map((user) => {
           const { id, username, email } = user;
@@ -113,26 +123,32 @@ export default function Home() {
               <CardContent>
                 <p>Email: {email}</p>
                 <div className="mt-4 flex space-x-2">
-                  {!isUserLoggedIn && (
-                    <Button
-                      onClick={() => handleOpenChat(id)}
-                      variant="default"
-                      disabled={openingChat}
-                    >
-                      Open Chat
-                      {openingChat && <Loader2 className="animate-spin" />}
-                    </Button>
+                  {currentId && (
+                    <>
+                      {!isUserLoggedIn && (
+                        <Button
+                          onClick={() => handleOpenChat(id)}
+                          variant="default"
+                          disabled={openingChat}
+                        >
+                          Open Chat
+                          {openingChat && <Loader2 className="animate-spin" />}
+                        </Button>
+                      )}
+                      <Button
+                        onClick={() =>
+                          router.push(
+                            isUserLoggedIn
+                              ? "/user/edit-profile"
+                              : `/user/${id}`
+                          )
+                        }
+                        variant="outline"
+                      >
+                        {isUserLoggedIn ? "Edit Profile" : "View Profile"}
+                      </Button>
+                    </>
                   )}
-                  <Button
-                    onClick={() =>
-                      router.push(
-                        isUserLoggedIn ? "/user/edit-profile" : `/user/${id}`
-                      )
-                    }
-                    variant="outline"
-                  >
-                    {isUserLoggedIn ? "Edit Profile" : "View Profile"}
-                  </Button>
                 </div>
               </CardContent>
             </Card>

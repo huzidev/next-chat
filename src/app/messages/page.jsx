@@ -1,6 +1,5 @@
 "use client";
 
-import EmptyChat from "@/components/general/EmptyChat";
 import Spinner from "@/components/general/Spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { db } from "@/services/firebase";
@@ -91,7 +90,7 @@ export default function Messages() {
         <h1 className="text-2xl font-bold">Your Messages</h1>
       </div>
       {!messages.length ? (
-        <EmptyChat type="messages" message="No messages found" />
+        <EmptyState message="No messages found" />
       ) : (
         <div className="space-y-4">
           {messages.reverse().map((message) => (
