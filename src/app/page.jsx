@@ -1,5 +1,5 @@
 "use client";
-import EmptyState from "@/components/general/EmptyChat";
+import EmptyState from "@/components/general/EmptyState";
 import Spinner from "@/components/general/Spinner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";

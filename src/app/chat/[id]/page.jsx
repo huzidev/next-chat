@@ -1,5 +1,6 @@
 "use client";
 
+import EmptyState from "@/components/general/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +33,7 @@ export default function ChatPage() {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
           console.log("SW what is data on fetch", data);
+          console.log("SW what is senderId loggedIn", senderId);
           
           setMessages(data.messages || []);
           setIsSender(data.senderId === senderId || data.receiverId === senderId);
@@ -72,14 +74,13 @@ export default function ChatPage() {
       <div className="flex items-center mb-4">
         <Button
           variant="plain"
-          className="p-0 pr-2"
+          className="p-0 pr-2 flex items-center text-2xl gap-1"
           onClick={() => router.back()}
         >
           <ChevronLeft />
+          Chat
         </Button>
-        <h1>Chat</h1>
       </div>
-      <h1 className="text-2xl font-bold mb-4"></h1>
       <div className="space-y-4 mb-4">
         {loading ? (
           Array.from({ length: 5 }).map((_, index) => (
@@ -89,20 +90,27 @@ export default function ChatPage() {
           <EmptyState message="No messages found" />
         ) : (
           messages.map((message, index) => {
+            const isSender = message.senderId === senderId;
             return (
               <div
                 key={index}
-                className={`p-4 rounded-lg ${
-                  isSender ? "bg-blue-100" : "bg-gray-100"
-                }`}
+                className={`flex ${isSender ? "justify-end" : "justify-start"}`}
               >
-                <p>
-                  <strong>{isSender ? "You" : "User"}:</strong>{" "}
-                  {message.content}
-                </p>
-                <p className="text-xs text-gray-500">
-                  {new Date(message.createdAt.seconds * 1000).toLocaleString()}
-                </p>
+                <div
+                  className={`p-4 rounded-lg max-w-[70%] ${
+                    isSender ? "bg-blue-100" : "bg-gray-100"
+                  }`}
+                >
+                  <p>
+                    <strong>{isSender ? "You" : "User"}:</strong>{" "}
+                    {message.content}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {new Date(
+                      message.createdAt.seconds * 1000
+                    ).toLocaleString()}
+                  </p>
+                </div>
               </div>
             );
           })

@@ -1,5 +1,6 @@
 "use client";
 
+import EmptyState from "@/components/general/EmptyState";
 import Spinner from "@/components/general/Spinner";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { db } from "@/services/firebase";
